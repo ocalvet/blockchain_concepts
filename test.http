@@ -1,0 +1,9 @@
+GET http://localhost:8082/
+
+###
+POST http://localhost:8082/
+Content-Type: application/json
+
+{
+  "BPM": 70
+}
