@@ -1,7 +1,19 @@
 package main
 
-import "github.com/davecgh/go-spew/spew"
+import (
+	"log"
+	"os"
+
+	"github.com/davecgh/go-spew/spew"
+	"github.com/joho/godotenv"
+)
 
 func main() {
-	spew.Dump("Hello Spew")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	port := os.Getenv("APP_PORT")
+	spew.Dump(port)
 }
