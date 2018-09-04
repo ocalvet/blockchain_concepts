@@ -6,4 +6,5 @@ This repository starts with the concepts in this [blog](https://medium.com/@myco
 
 ## How to run
 - Clone the repo
+- Create a data directory `$ mkdir data`
 - Run it `$ go run main.go`
