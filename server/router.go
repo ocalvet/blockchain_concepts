@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
+	"time"
 
 	"github.com/ocalvet/blockchain_concepts/blockchain"
 
@@ -16,12 +16,6 @@ import (
 var Blockchain blockchain.Chain
 
 func makeMuxRouter() http.Handler {
-	dir, err := os.Getwd()
-	if err != nil {
-		panic("Could not create current directory")
-	}
-
-	Blockchain = blockchain.New(dir + string(os.PathSeparator) + "data")
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
 	muxRouter.HandleFunc("/", handleWriteBlock).Methods("POST")
@@ -52,6 +46,13 @@ func handleWriteBlock(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	blocks := Blockchain.Get()
+	if len(blocks) <= 0 {
+		// Create genesis block
+		t := time.Now()
+		genesisBlock := block.Block{0, t.String(), 0, "", ""}
+		spew.Dump(genesisBlock)
+		blocks = append(blocks, genesisBlock)
+	}
 	newBlock, err := block.NewBlock(blocks[len(blocks)-1], m.BPM)
 	if err != nil {
 		respondWithJSON(w, r, http.StatusInternalServerError, m)

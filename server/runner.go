@@ -5,9 +5,12 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/ocalvet/blockchain_concepts/blockchain"
 )
 
-func Run() error {
+func Run(bc blockchain.Blockchain) error {
+	Blockchain = bc
 	mux := makeMuxRouter()
 	httpAddr := os.Getenv("APP_PORT")
 	log.Println("Listening on ", httpAddr)

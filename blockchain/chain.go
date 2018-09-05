@@ -2,9 +2,11 @@ package blockchain
 
 import (
 	"github.com/ocalvet/blockchain_concepts/block"
+	"github.com/ocalvet/blockchain_concepts/database"
 )
 
 type Blockchain struct {
+	db database.Database
 }
 
 type Chain interface {
@@ -13,20 +15,22 @@ type Chain interface {
 	Replace([]block.Block)
 }
 
-func New(location string) Blockchain {
-	return Blockchain{}
+func New(db database.Database) Blockchain {
+	return Blockchain{db}
 }
 
 func (chain Blockchain) Get() []block.Block {
-	return []block.Block{}
+	blocks := []block.Block{}
+	chain.db.Read("chain", "blocks", &blocks)
+	return blocks
 }
 
-func (chain Blockchain) Save([]block.Block) {
+func (chain Blockchain) Save(blocks []block.Block) {
+	chain.db.Write("chain", "blocks", blocks)
 }
 
 func (chain Blockchain) Replace(newBlocks []block.Block) {
 	if len(newBlocks) > len(chain.Get()) {
-		// TODO - save longest chain
 		chain.Save(newBlocks)
 	}
 }
