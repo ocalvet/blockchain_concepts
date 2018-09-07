@@ -2,8 +2,10 @@ package main
 
 import (
 	"log"
+	"net"
 	"os"
 
+	"github.com/ocalvet/blockchain_concepts/block"
 	"github.com/ocalvet/blockchain_concepts/blockchain"
 
 	"github.com/joho/godotenv"
@@ -11,8 +13,7 @@ import (
 	"github.com/ocalvet/blockchain_concepts/server"
 )
 
-// // Blockchain holds the blockchain in memory
-// var Blockchain []block.Block
+var bcServer chan []block.Block
 
 func main() {
 	// Load environment
@@ -33,17 +34,31 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// If not genesisBlock create it
-	// TODO - go func() {
-	// 	t := time.Now()
-	// 	genesisBlock := block.Block{0, t.String(), 0, "", ""}
-	// 	spew.Dump(genesisBlock)
-	// 	Blockchain = append(Blockchain, genesisBlock)
-	// }()
-
 	// Load blockchain
 	blkChain := blockchain.New(db)
 
-	// Start server
+	// Start web server
 	log.Fatal(server.Run(blkChain))
+
+	// Channel to handle the blockchain
+	bcServer = make(chan []block.Block)
+
+	// start TCP and serve TCP server
+	server, err := net.Listen("tcp", ":"+os.Getenv("ADDR"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer server.Close()
+
+	for {
+		conn, err := server.Accept()
+		if err != nil {
+			log.Fatal(err)
+		}
+		go handleConn(conn)
+	}
+}
+
+func handleConn(conn net.Conn) {
+	defer conn.Close()
 }
