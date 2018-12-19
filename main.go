@@ -16,10 +16,7 @@ import (
 
 func main() {
 	// Load environment
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
+	godotenv.Load()
 
 	// Get Working directory
 	dir, err := os.Getwd()
